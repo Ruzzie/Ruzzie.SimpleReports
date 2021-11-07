@@ -1,0 +1,65 @@
+﻿= TinyToml Toml parser
+
+Toml parser based on the https://toml.io/en/v1.0.0-rc.3[Toml Specification]
+The parser logic itself is inspired on a https://github.com/munificent/craftinginterpreters/blob/master/c/compiler.c[Pratt like parser]
+
+.Simplified structure
+[ditaa]
+....
+
+Text <--= Scanner <------------- Parser <----- Toml.Parse
+                   NextToken=--> magic  ----=> TomlDoc
+
+....
+
+.Limitations
+* Currently supports nesting of 11 levels (arrays / tables)
+
+== Todo
+
+* [x] Create new branch for development on TinyToml
+
+.Parsing
+* [x] Parse `+` and `-` prefixes for https://toml.io/en/v1.0.0-rc.3#integer[Integers]
+* [x] Error on leading zeros except `-0` and `+0`
+* [x] Parse binary, octadecimal and hexadecimal https://toml.io/en/v1.0.0-rc.3#integer[integers]
+* [x] Parse `_` between digits (basically ignore them), for Integers
+* [x] Parse Toml https://toml.io/en/v1.0.0-rc.3#float[Floats], with `.` and `E+`, `E-` infix
+* [x] Parse `+` and `-` prefixes for https://toml.io/en/v1.0.0-rc.3#float[Floats]
+* [x] Parse +/-  `inf` `nan` Float literals
+* [x] Parse `_` between digits (basically ignore them), for Floats and Integers
+* [x] Unescape Basic Strings and implement escape sequences
+* [x] Unescape Multi-line Strings and implement sequences
+* [x] Parse Local Date-Times
+* [x] Parse DateTimeOffsets, starting with UTC / Z time
+* [x] Parse Literal String
+* [x] Parse Multi-line Literal String
+* [ ] Validate / Throw error / handle case when a multiline string is used as a key
+* [ ] Differentiate between LocalDateType and DateTimeOffset input Toml Type in TomlDateTimeOffset type and or Parser
+* [ ] Parse Local Time
+
+
+
+
+.Api And structure
+* [ ] Consistent and easy to use error handling / Exceptions
+* [ ] Improve API for best developer experience, now the types have the `TryReadxxx` construct, this is not very easy to use when you have deep nesting of tables.
+* [ ] Improve Error messages to be more user friendly
+* [ ] Fix / Validate the Column count progression in the Scanner (plus tests)
+* [ ] When done remove obsolete, unused code
+* [ ] Refactor and restructure / redesign internals where necessary, to be a) consistent / easy to read and b) easy to maintain
+* [ ] Review types: class, structs, ref readonly structs, if the are useful / beneficial and intuitive
+* [ ] Document public api
+* [ ] Create Readme with examples
+* [ ] Extend testsuite with example toml documents from other projects
+* [ ] Extend with benchmarks
+
+
+== Notes
+* Leading zero's are allowed in this parser implementation, this differs from the Toml spec.
++
+I have not seen an argument why allowing this can cause harm. (and it was easier to implement)
+* Partial DateTimes are allowed, and will not produce an error this differs from the spec
++
+for example `1975-01` defaults to `1975-01-01 00:00:00` local time.
+* DateTime milliseconds are truncated to a number below 1000.

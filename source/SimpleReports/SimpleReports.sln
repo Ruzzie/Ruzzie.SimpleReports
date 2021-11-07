@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyToml", "TinyToml\TinyToml.csproj", "{4E68DDC6-DE8F-4FA1-9698-0F644C0D39A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyToml.UnitTests", "TinyToml.UnitTests\TinyToml.UnitTests.csproj", "{B9CC5D8A-E5FE-4166-B4E5-1E9A9CDD6834}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TinyTomlCode", "TinyTomlCode\TinyTomlCode.shproj", "{B89CD2FD-2523-4EC5-9A1B-C95B9B66ED04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.SimpleReports", "Ruzzie.SimpleReports\Ruzzie.SimpleReports.csproj", "{A542C3FE-D43B-4ABD-866D-09773C3FB069}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ruzzie.SimpleReports.UnitTests", "Ruzzie.SimpleReports.UnitTests\Ruzzie.SimpleReports.UnitTests.csproj", "{4737B324-B154-4DAB-A16B-A285DDA01783}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E68DDC6-DE8F-4FA1-9698-0F644C0D39A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E68DDC6-DE8F-4FA1-9698-0F644C0D39A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E68DDC6-DE8F-4FA1-9698-0F644C0D39A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E68DDC6-DE8F-4FA1-9698-0F644C0D39A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9CC5D8A-E5FE-4166-B4E5-1E9A9CDD6834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9CC5D8A-E5FE-4166-B4E5-1E9A9CDD6834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9CC5D8A-E5FE-4166-B4E5-1E9A9CDD6834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9CC5D8A-E5FE-4166-B4E5-1E9A9CDD6834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A542C3FE-D43B-4ABD-866D-09773C3FB069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A542C3FE-D43B-4ABD-866D-09773C3FB069}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A542C3FE-D43B-4ABD-866D-09773C3FB069}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A542C3FE-D43B-4ABD-866D-09773C3FB069}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4737B324-B154-4DAB-A16B-A285DDA01783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4737B324-B154-4DAB-A16B-A285DDA01783}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4737B324-B154-4DAB-A16B-A285DDA01783}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4737B324-B154-4DAB-A16B-A285DDA01783}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

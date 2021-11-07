@@ -1,0 +1,17 @@
+﻿[SINGLE-ARTIST]
+title       = "SELECT A SINGLE ARTIST"
+category    = "artists"
+feature     = "BASIC"
+with_totals = true
+query       = """
+SELECT * FROM ARTIST
+WHERE ArtistId = @artistId;
+"""
+
+    [SINGLE-ARTIST.parameters.artist]
+    display_name  = "Artist filter"
+    name          = "@artistId"
+    type          = "FILTER_LOOKUP"
+    field_type    = "u8"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["SELECT ArtistId, Name from Artist;"]

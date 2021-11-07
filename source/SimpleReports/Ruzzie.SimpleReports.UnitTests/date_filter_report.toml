@@ -1,0 +1,22 @@
+﻿[SALES-PER-CHANNEL-TOTAL]
+title       = "sales per channel"
+category    = "sales"
+feature     = "BASIC"
+with_totals = true
+query       = """
+SELECT sale_sourceSystem_code            as "channel",
+       SUM(qty)                          as "total",
+       SUM(sale_price_total_ExVat) / 100 as "total price excl. vat"
+FROM inventory_out
+WHERE mutationType = 'sale'
+AND (inventory_out.onDay >= @date_from_incl AND inventory_out.onDay <= @date_to_incl)
+GROUP BY sale_sourceSystem_code
+ORDER by SUM(sale_price_total_ExVat) DESC
+"""
+
+    [SALES-PER-CHANNEL-TOTAL.parameters.periode]
+    type = "DATE_RANGE"
+    from = "@date_from_incl"
+    to = "@date_to_incl"
+    field_type = "DT"
+#    default = "TODAY"

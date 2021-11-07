@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Title>Ruzzie's SimpleReports</Title>
+        <Description>A very simple and basic report engine based on reports defined in a config file.</Description>
+        <TargetFrameworks>netstandard2.1;netframework5.0</TargetFrameworks>
+        <Authors>Dorus Verhoeckx</Authors>
+        <Company>D Crafting</Company>
+        <Copyright>Copyright © Dorus Verhoeckx 2020-2021</Copyright>
+        <Version>0.0.1</Version>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>1701;1702;1591;</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="18.0.0" />
+      <PackageReference Include="Ruzzie.Common.Types" Version="0.0.14.41" />
+    </ItemGroup>
+
+    <!-- INCLUDE SOURCE OF TINY TOML PARSER, SUCH THAT IT IS PACKED IN THE PUBLISHED DLL -->
+    <Import Project="..\TinyTomlCode\TinyTomlCode.projitems" Label="Shared" />
+
+</Project>

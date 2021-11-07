@@ -1,0 +1,154 @@
+[ONLINE-ORDERS-VAT]                                              # The unique Id of the report, can only contain 0-9 A-Z and -
+title       = "BTW Webshop verkoop"
+description = "Totaal btw bedrag per btw category van producten" # optional extra description
+category    = "Orders"                                           # the category of the report, this can be used to group the report for the user
+feature     = "ORDERS"                                           # the booki feature set this report belongs to, this is for feature-toggling / customer, can only contain 0-9 A-Z and -
+with_totals = false                                              # is implicitly false when not set; indicates if a totals row should be calculated and added
+sql         = """
+SELECT COUNT(*)                        as "Aantal producten",
+       sale_price_vatPermille / 10     AS "Btw perc.",
+       SUM(sale_price_vatAmount) / 100 as "Totaal bedrag"
+FROM inventory_out
+WHERE sell_orderId IS NOT NULL
+  AND sale_price_vatAmount > 0
+  AND mutationType = 'sale'
+  AND (inventory_out.onDay >= @date_from_incl AND inventory_out.onDay <= @date_to_incl)
+GROUP BY sale_price_vatPermille
+"""
+    [[ONLINE-ORDERS-VAT.parameters]]  # the parameters array, in the other queries it is written as the inline variant: parameters = [ {type = ...,...},{...} ]
+    type    = "DATE_RANGE"            # The parameter type for this query, these are fixed and known by the booki system
+    from    = "@date_from_incl"       # The DATE_RANGE query always has a from parameter, this is the name of the from sql parameter in the query
+    to      = "@date_to_incl"         # The DATE_RANGE query always has a to parameter, this is the name of the to sql parameter in the query
+    default = "TODAY"                 # Possible values for the DATE_RANGE type: TODAY, THIS_WEEK, THIS_MONTH, THIS_QUARTER, THIS_YEAR
+
+[ONLINE-ORDERS-CHANNEL]
+title     = "Orders per kanaal"
+category  = "Orders"
+feature   = "ORDERS"
+sql       = """
+SELECT saleChannelCode,
+       COUNT(*)                                       as "Aantal orders",
+       SUM(priceTotalExVat) / 100                     as "Totaal excl. btw",
+       SUM(priceTotalWithVat) / 100                   as "Totaal incl. btw",
+       SUM(customer_shipping_cost_totalExVat) / 100   as "Verzendkosten excl. btw",
+       SUM(customer_shipping_cost_totalWithVat) / 100 as "Verzendkosten incl. btw"
+FROM sell_order
+WHERE orderStatus NOT IN ('payment_pending', 'cancelled')
+AND (inventory_out.onDay >= @date_from_incl AND inventory_out.onDay <= @date_to_incl)
+GROUP BY saleChannelCode
+"""
+parameters = [ { type = "DATE_RANGE", from = "@date_from_incl", to = "@date_to_incl" , default = "TODAY"} ]
+
+[ONLINE-ORDERS-WEEK]
+title     = "Online verkoop per week"
+category  = "Orders"
+feature   = "ORDERS"
+sql       = """
+SELECT year(soldOnDay)                                as "Jaar",
+       weekofyear(soldOnDay)                          as "Week",
+       COUNT(*)                                       as "Aantal orders",
+       SUM(priceTotalExVat) / 100                     as "Totaal excl. btw",
+       SUM(priceTotalWithVat) / 100                   as "Totaal incl. btw",
+       SUM(customer_shipping_cost_totalExVat) / 100   as "Verzendkosten excl. btw",
+       SUM(customer_shipping_cost_totalWithVat) / 100 as "Verzendkosten incl. btw"
+FROM sell_order
+WHERE orderStatus NOT IN ('payment_pending', 'cancelled')
+GROUP BY year(soldOnDay), weekofyear(soldOnDay)
+order by year(soldOnDay), weekofyear(soldOnDay)
+"""
+
+[VAT-PER-SALE-SYSTEM]
+title     = "BTW verkoop per kanaal"
+category  = "Statistieken"
+feature   = "BASIC"
+sql       = """
+SELECT sale_sourceSystem_code            as "Verkoop kanaal",
+       SUM(qty)                          as "Aantal",
+       SUM(sale_price_total_ExVat) / 100 as "Totaal excl. btw",
+       sale_price_vatPermille / 10       AS "Btw perc.",
+       SUM(sale_price_vatAmount) / 100   as "Totaal Btw"
+FROM inventory_out
+WHERE mutationType = 'sale'
+AND (inventory_out.onDay >= @date_from_incl AND inventory_out.onDay <= @date_to_incl)
+GROUP BY sale_sourceSystem_code, sale_price_vatPermille
+ORDER by sale_sourceSystem_code, sale_price_vatPermille, SUM(sale_price_total_ExVat) DESC;
+"""
+parameters = [ { type = "DATE_RANGE", from = "@date_from_incl", to = "@date_to_incl" , default = "TODAY"} ]
+
+[SALES-PER-CHANNEL-TOTAL]
+title       = "Verkopen per kanaal"
+category    = "Statistieken"
+feature     = "BASIC"
+with_totals = true
+sql         = """
+SELECT sale_sourceSystem_code            as "Verkoop kanaal",
+       SUM(qty)                          as "Aantal",
+       SUM(sale_price_total_ExVat) / 100 as "Totaal excl. btw"
+FROM inventory_out
+WHERE mutationType = 'sale'
+AND (inventory_out.onDay >= @date_from_incl AND inventory_out.onDay <= @date_to_incl)
+GROUP BY sale_sourceSystem_code
+ORDER by SUM(sale_price_total_ExVat) DESC
+"""
+parameters   = [ { type = "DATE_RANGE", from = "@date_from_incl", to = "@date_to_incl" , default = "TODAY"} ]
+
+[STOCK-PER-LOCATION]
+title                     = "Voorraad per locatie"
+category                  = "Voorraad"
+feature                   = "BASIC"
+enrich_with_group_path    = { product_groupId = "LocatieId", display_as = "Locatie"}  # indicates if the results of this query should be enriched with the full location group path, needs the product_group_id column name to use
+columns.LocatieId.display = "hidden"
+with_totals               = true
+sql                       = """
+SELECT product_groupId                                 as LocatieId,
+       SUM(CURRENT_QTY)                                as Voorraad,
+       (SUM(list_unit_priceExVat * CURRENT_QTY)) / 100 as "Totale verkoop waarde excl. btw",
+       AVG(AVG_COST_PRICE) / 100                       as "Gemmiddelde inkoop prijs",
+       AVG(list_unit_priceExVat) / 100                 as "Gemmiddelde verkoop prijs",
+       (AVG(list_unit_priceExVat) - AVG(AVG_COST_PRICE)) / 100
+                                                       as "Gemm. winst per product",
+       1000 - (1000 / SUM(QTY_OUT))                    as Populariteit,
+       qtyType                                         as Eenheid
+FROM stock
+WHERE CURRENT_QTY > 0
+  AND qtyType IN ('piece', 'box')
+  AND itemType = 'physical'
+  and inventoryType = 'managed'
+GROUP BY product_groupId, qtyType
+ORDER BY SUM(CURRENT_QTY) DESC, (SUM(list_unit_priceExVat * CURRENT_QTY)) DESC;
+"""
+
+[STOCK-PRODUCT-PER-LOCATION]
+title                     = "Producten per locatie"
+category                  = "Voorraad"
+feature                   = "BASIC"
+with_totals               = true
+enrich_group_path         = { groupId = "LocatieId", as = "Locatie"}  # indicates if the results of this query should be enriched with the full location group path, needs the product_group_id column name to use
+columns.image_url.display = "image"                                   # indicates that the image_url field is an image url, this can be used by clients to render images
+columns.LocatieId.display = "hidden"                                  # indicates that the LocatieId field should not be displayed
+parameters                = [ { type = "LOCATION_GROUP_FILTER", name = "@product_groupId", default = "NONE"} ]
+sql                       = """
+SELECT product_groupId                                          as LocatieId,
+       publication_mainAuthor                                   as Auteur,
+       title                                                    as Titel,
+       `condition`                                              as Conditie,
+       CURRENT_QTY                                              as Aantal,
+       EAN13_STR                                                as EAN,
+       condition_description                                    as `Conditie omschrijving`,
+       publication_publisher_name                               as Uitgever,
+       publication_form                                         as Vorm,
+       publication_edition                                      as Editie,
+       publication_release_date                                 as Uitgavedatum,
+       (list_unit_priceExVat + list_unit_price_vatAmount) / 100 as Verkoopprijs,
+       SKU,
+       mainImageUrl                                             as image_url
+
+FROM stock
+WHERE CURRENT_QTY > 0
+  AND qtyType IN ('piece', 'box')
+  AND itemType = 'physical'
+  AND inventoryType = 'managed'
+  AND product_groupId = @product_groupId
+ORDER BY publication_mainAuthor, title;
+"""
+
