@@ -14,7 +14,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
 
-        
+        <IsPackable>false</IsPackable>
+
     </PropertyGroup>
 
     <PropertyGroup>
