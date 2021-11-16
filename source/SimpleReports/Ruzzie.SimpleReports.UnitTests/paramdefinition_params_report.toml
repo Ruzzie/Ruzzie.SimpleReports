@@ -29,3 +29,29 @@ ORDER by SUM(sale_price_total_ExVat) DESC
     field_type    = "u8"
     list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
     params        = ["SELECT tagId, name from tag;"]
+
+    [SALES-PER-CHANNEL-TOTAL.parameters.uint64test]
+    display_name  = "filter test"
+    name          = "@uint64"
+    type          = "FILTER_LOOKUP"
+    field_type    = "u64"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["SELECT tagId, tagId from tag;"]
+
+
+    [SALES-PER-CHANNEL-TOTAL.parameters.int64test]
+    display_name  = "filter test"
+    name          = "@int64"
+    type          = "FILTER_LOOKUP"
+    field_type    = "i64"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["SELECT tagId, tagId from tag;"]
+
+    [SALES-PER-CHANNEL-TOTAL.parameters.strtest]
+    display_name  = "filter test"
+    name          = "@s"
+    type          = "FILTER_LOOKUP"
+    field_type    = "s"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["SELECT tag, tag from tag;"]
+

@@ -14,6 +14,14 @@
         ///<summary>Unsigned 32 bits integer</summary>
         U32,
 
+        ///<summary>Unsigned 64 bits integer</summary>
+        U64,
+
+        ///<summary>Signed 64 bits integer</summary>
+        I64,
+
+        ///<summary>String</summary>
+        S,
         // ReSharper disable once InconsistentNaming
         ///<summary>DateTime</summary>
         DT
