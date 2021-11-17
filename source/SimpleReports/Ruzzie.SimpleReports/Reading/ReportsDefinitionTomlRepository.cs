@@ -161,12 +161,19 @@ namespace Ruzzie.SimpleReports.Reading
 
             switch (parameterType)
             {
-                case ParameterType.FILTER_LOOKUP:
-                    return ParseFilterLookupParameter(parameterId, paramTable, fieldType, parameterType,
-                                                      typeResolver);
                 case ParameterType.DATE_RANGE:
                     return ParseDateRangeParameter(parameterId, paramTable, fieldType, parameterType,
                                                    typeResolver);
+                case ParameterType.FILTER_LOOKUP:
+                case ParameterType.TIMEZONE:
+                case ParameterType.TIME_INTERVAL:
+
+                    return ParseSimpleParameterTypeParameter(parameterId
+                                                           , paramTable
+                                                           , fieldType
+                                                           , parameterType
+                                                           , typeResolver);
+
                 case ParameterType.NONE:
                     throw new ArgumentOutOfRangeException(nameof(type), parameterType, "Invalid");
                 default:
@@ -205,7 +212,7 @@ namespace Ruzzie.SimpleReports.Reading
                                                   , parameterFieldType);
         }
 
-        private static FilterParameterDefinition ParseFilterLookupParameter(string             parameterId,
+        private static FilterParameterDefinition ParseSimpleParameterTypeParameter(string             parameterId,
                                                                             TomlTable          paramTable,
                                                                             ParameterFieldType parameterFieldType,
                                                                             ParameterType      parameterType,

@@ -47,8 +47,30 @@ namespace Ruzzie.SimpleReports.UnitTests
                             .BeEquivalentTo(new[] { "testing one", "testing two" });
         }
 
-        [Test]
-        public void WithParamTypeU8Test()
+        [TestCase("uint64test", ParameterFieldType.U64)]
+        [TestCase("int64test",  ParameterFieldType.I64)]
+        [TestCase("tag",        ParameterFieldType.U8)]
+        public void WithParamFieldTypeTest(string parameterId, ParameterFieldType expectedFieldType)
+        {
+            //Arrange
+            var repository = new ReportsDefinitionTomlRepository("paramdefinition_params_report.toml"
+                                                               , _listProviderTypeResolver
+                                                               , _postProcessPipelineTypeResolver);
+
+            //Act
+            var reportDefinition = repository.GetReportDefinition("SALES-PER-CHANNEL-TOTAL").UnwrapOr(default);
+
+            //Assert
+            reportDefinition.Parameters[parameterId]
+                            .ParameterFieldType.Should()
+                            .BeEquivalentTo(expectedFieldType);
+        }
+
+        [TestCase("timezone", ParameterType.TIMEZONE)]
+        [TestCase("interval", ParameterType.TIME_INTERVAL)]
+        [TestCase("tag",      ParameterType.FILTER_LOOKUP)]
+        [TestCase("periode",  ParameterType.DATE_RANGE)]
+        public void WithParamTypeTest(string parameterId, ParameterType expectedType)
         {
             //Arrange
             var repository = new ReportsDefinitionTomlRepository("paramdefinition_params_report.toml"
@@ -58,9 +80,7 @@ namespace Ruzzie.SimpleReports.UnitTests
             var reportDefinition = repository.GetReportDefinition("SALES-PER-CHANNEL-TOTAL").UnwrapOr(default);
 
             //Assert
-            reportDefinition.Parameters["tag"]
-                            .ParameterFieldType.Should()
-                            .BeEquivalentTo(ParameterFieldType.U8);
+            reportDefinition.Parameters[parameterId].Type.Should().Be(expectedType);
         }
     }
 }

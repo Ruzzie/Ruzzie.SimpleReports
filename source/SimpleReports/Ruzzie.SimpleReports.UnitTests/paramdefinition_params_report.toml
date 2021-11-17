@@ -55,3 +55,23 @@ ORDER by SUM(sale_price_total_ExVat) DESC
     list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
     params        = ["SELECT tag, tag from tag;"]
 
+    [SALES-PER-CHANNEL-TOTAL.parameters.timezone]
+    display_name  = "Timezone"
+    name          = "@tz"
+    type          = "TIMEZONE"
+    field_type    = "S"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["select name, name from pg_timezone_names where (pg_timezone_names.name NOT LIKE 'posix%');"]
+
+    [SALES-PER-CHANNEL-TOTAL.parameters.interval]
+    display_name  = "Interval"
+    name          = "@interval"
+    type          = "TIME_INTERVAL"
+    #values        = [{ key = "1 day"   , value = "1 day"   },
+    #                 { key = "1 week"  , value = "1 week"  },
+    #                 { key = "4 weeks" , value = "4 weeks" },
+    #                 { key = "13 weeks", value = "13 weeks"},
+    #                 { key = "30 days" , value = "30 days" },
+    #                 { key = "1 year"  , value = "365 days"}]
+    field_type    = "S"  # 1 day, 2 days, 1 week, 2 weeks, 1 hour etc... (month and year are not supported yet, 365 days is, or 31 days, or 4 weeks etc)
+

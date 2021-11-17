@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Ruzzie.Common.Types;
-using Ruzzie.SimpleReports.Types;
 
 namespace Ruzzie.SimpleReports.Reading
 {
