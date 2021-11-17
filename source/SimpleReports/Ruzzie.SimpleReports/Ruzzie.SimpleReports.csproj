@@ -20,6 +20,15 @@
         <NoWarn>1701;1702;1591;</NoWarn>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Ruzzie.SimpleReports.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugSymbols>true</DebugSymbols>
+      <DocumentationFile>bin\Release\Ruzzie.SimpleReports.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="CsvHelper" Version="18.0.0" />
       <PackageReference Include="Ruzzie.Common.Types" Version="0.0.14.41" />
