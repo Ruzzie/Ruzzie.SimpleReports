@@ -71,24 +71,27 @@ namespace Ruzzie.SimpleReports
                 var ctx            = new ReportQueryCtx(reportDefinition);
                 var allQueryParams =  new List<IQueryRunParameter>();
 
-                foreach (var reportParameterValue in runContext.ReportParamValues)
+                for (var i = 0; i < runContext.ReportParamValues.Length; i++)
                 {
+                    var reportParameterValue = runContext.ReportParamValues[i];
+
                     var createQueryParamResult = reportParameterValue.CreateQueryParameters(ctx);
-                    if (createQueryParamResult.IsErr)
+                    var (isError, isOk) =
+                        createQueryParamResult.GetValue(out IQueryRunParameter[]? queryRunParameters, out var innerErr);
+
+                    if (isError)
                     {
-                        var innerErr = createQueryParamResult.UnwrapError();
-                        return new Err<RunReportErrKind, Exception>(innerErr.Message,
-                                                                    RunReportErrKind.ParameterError,
-                                                                    innerErr);
+                        return new Err<RunReportErrKind, Exception>(innerErr.ErrorKind.ToString() + " : " + innerErr.Message
+                                                                  , RunReportErrKind.ParameterError
+                                                                  , innerErr);
                     }
-                    else
-                    {
-                        allQueryParams.AddRange(createQueryParamResult.Unwrap());
-                    }
+
+                    if (isOk && queryRunParameters != null)
+                        allQueryParams.AddRange(queryRunParameters);
                 }
 
                 IAsyncQueryResult qr = runContext.QueryRunner.Run(runContext.Args, reportDefinition.QueryText,
-                                                                 allQueryParams);
+                                                                  allQueryParams);
 
                 foreach (var pipelineDefinition in reportDefinition.PostProcessPipelines)
                 {
@@ -121,13 +124,15 @@ namespace Ruzzie.SimpleReports
         {
             if (string.IsNullOrWhiteSpace(reportId))
             {
-                return new Err<ListParameterValuesErrKind, Exception>(nameof(reportId),
+                return new Err<ListParameterValuesErrKind, Exception>($"{nameof(reportId)} Cannot be null or empty"
+                                                                     ,
                                                                       ListParameterValuesErrKind.CannotBeNullOrEmpty);
             }
 
             if (string.IsNullOrWhiteSpace(parameterId))
             {
-                return new Err<ListParameterValuesErrKind, Exception>(nameof(parameterId),
+                return new Err<ListParameterValuesErrKind, Exception>($"{nameof(parameterId)} Cannot be null or empty"
+                                                                     ,
                                                                       ListParameterValuesErrKind.CannotBeNullOrEmpty);
             }
 

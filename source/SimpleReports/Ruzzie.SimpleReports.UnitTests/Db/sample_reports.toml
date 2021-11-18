@@ -15,3 +15,57 @@ WHERE ArtistId = @artistId;
     field_type    = "u8"
     list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
     params        = ["SELECT ArtistId, Name from Artist;"]
+
+
+
+[SINGLE-ARTIST-LIST-WITH-PARAM]
+title       = "SELECT A SINGLE ARTIST"
+category    = "artists"
+feature     = "BASIC"
+with_totals = true
+query       = """
+SELECT * FROM ARTIST
+WHERE ArtistId = @artistId;
+"""
+
+    [SINGLE-ARTIST-LIST-WITH-PARAM.parameters.artist]
+    display_name  = "Artist filter"
+    name          = "@artistId"
+    type          = "FILTER_LOOKUP"
+    field_type    = "u8"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["SELECT ArtistId, Name from Artist WHERE ArtistId >= @minArtistId;", "@minArtistId"]
+
+[PARAM-TYPES-TEST]
+title       = "SELECT PARAM VALUES"
+category    = "TESTS"
+feature     = "BASIC"
+with_totals = true
+query       = """
+SELECT @date_from_incl, @date_to_incl, @tz, @interval
+"""
+    [PARAM-TYPES-TEST.parameters.range]
+    type = "DATE_RANGE"
+    from = "@date_from_incl"
+    to = "@date_to_incl"
+    field_type = "DT"
+
+    [PARAM-TYPES-TEST.parameters.timezone]
+    display_name  = "Timezone"
+    name          = "@tz"
+    type          = "TIMEZONE"
+    field_type    = "S"
+    list_provider = "Ruzzie.SimpleReports.Db.SqlListProvider"
+    params        = ["select name, name from pg_timezone_names where (pg_timezone_names.name NOT LIKE 'posix%');"]
+
+    [PARAM-TYPES-TEST.parameters.interval]
+    display_name  = "Interval"
+    name          = "@interval"
+    type          = "TIME_INTERVAL"
+    #values        = [{ key = "1 day"   , value = "1 day"   },
+    #                 { key = "1 week"  , value = "1 week"  },
+    #                 { key = "4 weeks" , value = "4 weeks" },
+    #                 { key = "13 weeks", value = "13 weeks"},
+    #                 { key = "30 days" , value = "30 days" },
+    #                 { key = "1 year"  , value = "365 days"}]
+    field_type    = "S"  # 1 day, 2 days, 1 week, 2 weeks, 1 hour etc... (month and year are not supported yet, 365 days is, or 31 days, or 4 weeks etc)

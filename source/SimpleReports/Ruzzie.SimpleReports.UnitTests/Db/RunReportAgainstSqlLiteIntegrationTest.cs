@@ -129,6 +129,64 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
         }
 
         [Test]
+        public void TestParameterTypes()
+        {
+            using Stream stream = new MemoryStream();
+
+            var paramValues = new[]
+                              {
+                                  _reportService
+                                      .CreateDataRangeParameterValue("PARAM-TYPES-TEST"
+                                                                   , "range"
+                                                                   , new DateRangeInputValues(DateTime.Today
+                                                                                            , DateTime.Now))
+                                      .Unwrap()
+                                , _reportService
+                                  .CreateParameterValue("PARAM-TYPES-TEST", "timezone", "Europe/Amsterdam")
+                                  .Unwrap()
+                                , _reportService
+                                  .CreateParameterValue("PARAM-TYPES-TEST", "interval", "1 day")
+                                  .Unwrap()
+                              };
+            //Act
+            _reportService.RunReport(new RunReportContext("PARAM-TYPES-TEST"
+                                                        , ReadOnlySpan<(string Name, string Value)>.Empty
+                                                        , paramValues
+                                                        , CsvTypedReportWriter
+                                                        , SqlReportQueryRunner)
+                                   , stream)
+                          .Unwrap()
+                          .Wait();
+        }
+
+
+        [Test]
+        public void SqlListProviderTest()
+        {
+            //Act
+            var list = _reportService.ListParameterValues("SINGLE-ARTIST"
+                                                        , "artist"
+                                                        , ReadOnlySpan<(string Name, string Value)>.Empty)
+                                     .Unwrap();
+
+            //Assert
+            list.Values.Should().HaveCountGreaterThan(0);
+        }
+
+        [Test]
+        public void SqlListProviderWithSqlParametersTest()
+        {
+            //Act
+            var list = _reportService.ListParameterValues("SINGLE-ARTIST-LIST-WITH-PARAM"
+                                                        , "artist"
+                                                        , new[] { (Name: "@minArtistId", Value: "2") })
+                                     .Unwrap();
+
+            //Assert
+            list.Values.Should().HaveCountGreaterThan(0);
+        }
+
+        [Test]
         public void ExecuteSql()
         {
             //Arrange
@@ -151,6 +209,23 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
             command.CommandType = CommandType.Text;
             command.CommandText = File.ReadAllText($"Db{Path.DirectorySeparatorChar}integrationtest.sql");
             Console.WriteLine(command.ExecuteNonQuery());
+        }
+
+        [Test]
+        public void RunNonExistingReportShouldGiveProperError()
+        {
+            using Stream stream = new MemoryStream();
+
+            //Act
+            _reportService.RunReport(new RunReportContext("IDONOTEXIST"
+                                                        , ReadOnlySpan<(string Name, string Value)>.Empty
+                                                        , ReadOnlySpan<IReportParameterValue>.Empty
+                                                        , CsvTypedReportWriter
+                                                        , SqlReportQueryRunner)
+                                   , stream)
+                          .UnwrapError()
+                          .ErrorKind.Should()
+                          .Be(RunReportErrKind.ReportIdDoesNotExist);
         }
     }
 }

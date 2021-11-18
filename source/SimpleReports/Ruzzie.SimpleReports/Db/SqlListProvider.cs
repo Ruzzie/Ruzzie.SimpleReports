@@ -16,6 +16,14 @@ namespace Ruzzie.SimpleReports.Db
     ///  list_provider = "Ruzzie.SimpleReports.SqlListProvider"
     ///  params        = ["SELECT tagId, name from tags"]
     /// </code>
+    ///  You can add Sql parameters to the query by providing extra params
+    ///  the value of the parameter will be read from the runParams where the Name should match the given Sql parameter name
+    /// <code>
+    /// params        = ["SELECT tagId, name from tags WHERE category=@category", "@category"]
+    /// </code>
+    /// <code>
+    /// runParams = [(Name = "@category", Value ="popular")]
+    /// </code>
     /// </remarks>
     /// </summary>
     public class SqlListProvider : IListProvider
@@ -28,8 +36,8 @@ namespace Ruzzie.SimpleReports.Db
         }
 
         public IReadOnlyList<IReportParameterListValue> ListParameterValues(
-            IReportParameterDefinition                parameterDefinition,
-            ReadOnlySpan<(string Name, string Value)> runParams)
+            IReportParameterDefinition                parameterDefinition
+          , ReadOnlySpan<(string Name, string Value)> runParams)
         {
             using var connection = _createConnection(runParams);
             connection.Open();
@@ -39,6 +47,22 @@ namespace Ruzzie.SimpleReports.Db
             //List query
             using var command = connection.CreateCommand();
             command.CommandText = sql;
+
+            //check for extra parameters
+            for (var i = 1; i < parameterDefinition.ParamsArray.Count; i++)
+            {
+                var sqlParamParameterName = parameterDefinition.ParamsArray[i];
+                if (RunParamsHelper.GetParameterFromRunParams(runParams, sqlParamParameterName)
+                                   .TryGetValue(out var sqlParamValue))
+                {
+                    // has a value for a given parameter
+                    var sqlParam = command.CreateParameter();
+                    sqlParam.ParameterName = sqlParamParameterName;
+                    sqlParam.Value         = sqlParamValue;
+                    command.Parameters.Add(sqlParam);
+                }
+            }
+
 
             command.Prepare();
 
@@ -50,8 +74,8 @@ namespace Ruzzie.SimpleReports.Db
             while (reader.Read())
             {
                 resultList.Add(new ReportParameterListValue(reader.GetString(1)
-                                                            , reader[0]
-                                                            , parameterDefinition.ParameterFieldType));
+                                                          , reader[0]
+                                                          , parameterDefinition.ParameterFieldType));
             }
 
             return resultList;
