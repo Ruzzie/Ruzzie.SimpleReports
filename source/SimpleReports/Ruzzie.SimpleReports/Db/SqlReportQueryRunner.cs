@@ -10,13 +10,15 @@ namespace Ruzzie.SimpleReports.Db
     public class SqlReportQueryRunner : IReportQueryRunner
     {
         private readonly CreateConnectionForRunFunc _createConnectionForRunFunc;
+        private readonly bool                       _usePreparedStatement;
 
         private readonly ReadOnlyDictionary<Type, ColumnDataType> _columnTypeMapping;
 
         public SqlReportQueryRunner(CreateConnectionForRunFunc createConnectionForRunFunc,
-                                    Span<KeyValuePair<Type, ColumnDataType>> extraColumnTypeMapping)
+                                    Span<KeyValuePair<Type, ColumnDataType>> extraColumnTypeMapping,  bool usePreparedStatement = true)
         {
             _createConnectionForRunFunc = createConnectionForRunFunc;
+            _usePreparedStatement       = usePreparedStatement;
 
             if (extraColumnTypeMapping.IsEmpty)
             {
@@ -55,7 +57,8 @@ namespace Ruzzie.SimpleReports.Db
             dbCommand.CommandText = query;
             dbCommand.Parameters.AddRange(CreateSqlParameters(queryParameters, dbCommand));
 
-            dbCommand.Prepare();
+            if(_usePreparedStatement)
+                dbCommand.Prepare();
 
             // reader is wrapped in using in the ReadRows method for async reading
             var reader = dbCommand.ExecuteReader();
@@ -68,7 +71,7 @@ namespace Ruzzie.SimpleReports.Db
             for (var i = 0; i < columnCount; i++)
             {
                 var dbColumn = columnSchema[i];
-                // ReSharper disable once ConstantNullCoalescingCondition 
+                // ReSharper disable once ConstantNullCoalescingCondition
                 var name     = dbColumn.ColumnName ?? "";
 
                 var type       = dbColumn.DataType; // clr type? except datetime in some cases??

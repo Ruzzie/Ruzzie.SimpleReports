@@ -29,10 +29,12 @@ namespace Ruzzie.SimpleReports.Db
     public class SqlListProvider : IListProvider
     {
         private readonly CreateConnectionForRunFunc _createConnection;
+        private readonly bool                       _usePreparedStatement;
 
-        public SqlListProvider(CreateConnectionForRunFunc createConnection)
+        public SqlListProvider(CreateConnectionForRunFunc createConnection, bool usePreparedStatement = true)
         {
-            _createConnection = createConnection;
+            _createConnection    = createConnection;
+            _usePreparedStatement = usePreparedStatement;
         }
 
         public IReadOnlyList<IReportParameterListValue> ListParameterValues(
@@ -63,8 +65,8 @@ namespace Ruzzie.SimpleReports.Db
                 }
             }
 
-
-            command.Prepare();
+            if(_usePreparedStatement)
+                command.Prepare();
 
             using var reader = command.ExecuteReader();
 

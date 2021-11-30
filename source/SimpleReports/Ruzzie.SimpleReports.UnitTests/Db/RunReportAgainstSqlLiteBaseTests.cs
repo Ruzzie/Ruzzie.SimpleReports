@@ -19,17 +19,59 @@ using Ruzzie.SimpleReports.Writers;
 namespace Ruzzie.SimpleReports.UnitTests.Db
 {
     [TestFixture]
-    public class RunReportAgainstSqlLiteIntegrationTest
+    public class WithUsePreparedStatementsAgainstSqlLiteTestBase : RunReportAgainstSqlLiteTestBase
+    {
+        protected override SqlReportQueryRunner CreateQueryRunner(CreateConnectionForRunFunc createConnectionFunc)
+        {
+            return new SqlReportQueryRunner(createConnectionFunc
+                                          , Span<KeyValuePair<Type, ColumnDataType>>.Empty
+                                          , true);
+        }
+
+        protected override SqlListProvider CreateSqlListProvider(CreateConnectionForRunFunc createConnectionFunc)
+        {
+            return new SqlListProvider(createConnectionFunc, true);
+        }
+    }
+
+    [TestFixture]
+    public class WithoutUsePreparedStatementsAgainstSqlLiteTestBase : RunReportAgainstSqlLiteTestBase
+    {
+        protected override SqlReportQueryRunner CreateQueryRunner(CreateConnectionForRunFunc createConnectionFunc)
+        {
+            return new SqlReportQueryRunner(createConnectionFunc
+                                          , Span<KeyValuePair<Type, ColumnDataType>>.Empty
+                                          , false);
+        }
+
+        protected override SqlListProvider CreateSqlListProvider(CreateConnectionForRunFunc createConnectionFunc)
+        {
+            return new SqlListProvider(createConnectionFunc, false);
+        }
+    }
+
+    public abstract class RunReportAgainstSqlLiteTestBase
     {
         private IReportService _reportService;
 
-        private static readonly SqlReportQueryRunner SqlReportQueryRunner =
-            new SqlReportQueryRunner(x => CreateAndOpenConnection()
-                                   , Span<KeyValuePair<Type, ColumnDataType>>.Empty);
+        private readonly SqlReportQueryRunner _sqlReportQueryRunner;
+        private readonly SqlListProvider      _sqlListProvider;
 
         private static readonly CsvTypedReportWriter CsvTypedReportWriter = new CsvTypedReportWriter();
 
-        private const string DbFilename = "integrationtest.db";
+        protected RunReportAgainstSqlLiteTestBase()
+        {
+            // ReSharper disable once VirtualMemberCallInConstructor
+            _sqlReportQueryRunner = CreateQueryRunner(x => CreateAndOpenConnection());
+            // ReSharper disable once VirtualMemberCallInConstructor
+            _sqlListProvider = CreateSqlListProvider(x => CreateAndOpenConnection());
+        }
+
+        protected const string DbFilename = "integrationtest.db";
+
+        protected abstract SqlReportQueryRunner CreateQueryRunner(CreateConnectionForRunFunc     createConnectionFunc);
+        protected abstract SqlListProvider      CreateSqlListProvider(CreateConnectionForRunFunc createConnectionFunc);
+
 
         [OneTimeSetUp]
         public void Setup()
@@ -49,7 +91,7 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
             //load the sample report
             var listProviders = TypeResolver.Create(new IListProvider[]
                                                     {
-                                                        new SqlListProvider(ps => CreateAndOpenConnection())
+                                                        _sqlListProvider
                                                     });
             var postProcessingPipelines = TypeResolver.Create(new IPostProcessPipeline[] { });
 
@@ -103,7 +145,7 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
                                                         , ReadOnlySpan<(string Name, string Value)>.Empty
                                                         , new[] { parameterValue }
                                                         , CsvTypedReportWriter
-                                                        , SqlReportQueryRunner)
+                                                        , _sqlReportQueryRunner)
                                    , stream)
                           .Unwrap()
                           .Wait();
@@ -153,7 +195,7 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
                                                         , ReadOnlySpan<(string Name, string Value)>.Empty
                                                         , paramValues
                                                         , CsvTypedReportWriter
-                                                        , SqlReportQueryRunner)
+                                                        , _sqlReportQueryRunner)
                                    , stream)
                           .Unwrap()
                           .Wait();
@@ -221,7 +263,7 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
                                                         , ReadOnlySpan<(string Name, string Value)>.Empty
                                                         , ReadOnlySpan<IReportParameterValue>.Empty
                                                         , CsvTypedReportWriter
-                                                        , SqlReportQueryRunner)
+                                                        , _sqlReportQueryRunner)
                                    , stream)
                           .UnwrapError()
                           .ErrorKind.Should()
