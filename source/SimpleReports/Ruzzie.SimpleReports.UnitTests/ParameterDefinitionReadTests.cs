@@ -17,7 +17,7 @@ namespace Ruzzie.SimpleReports.UnitTests
 
         public ParameterDefinitionReadTests()
         {
-            var sqlListProvider = new SqlListProvider(runParams =>
+            var sqlListProvider = new SqlListProvider(_ =>
                                                       {
                                                           var mockConn = new Mock<DbConnection>();
                                                           return mockConn.Object;
@@ -63,7 +63,7 @@ namespace Ruzzie.SimpleReports.UnitTests
             //Assert
             reportDefinition.Parameters[parameterId]
                             .ParameterFieldType.Should()
-                            .BeEquivalentTo(expectedFieldType);
+                            .Be(expectedFieldType);
         }
 
         [TestCase("timezone", ParameterType.TIMEZONE)]

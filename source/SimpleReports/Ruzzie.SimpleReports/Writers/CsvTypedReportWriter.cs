@@ -13,21 +13,21 @@ namespace Ruzzie.SimpleReports.Writers
 {
     public class CsvTypedReportWriter : IReportDataWriter
     {
-        public const            string           Name = "Csv";
-        private static readonly ContentType      CsvContentType;
+        public const            string      Name = "Csv";
+        private static readonly ContentType CsvContentType;
+
         private static readonly CsvConfiguration CsvConfiguration;
+
+        // Format DateTime as ISO standard formatting with offset
+        private static readonly TypeConverterOptions DateFormatOptions =
+            new TypeConverterOptions { Formats = new[] { "o" } };
 
 
         static CsvTypedReportWriter()
         {
-            var csvContentType = new ContentType("text/csv") {CharSet = "utf-8"};
-            CsvContentType = csvContentType;
-
-            // Format DateTime as ISO standard formatting with offset
-            var dateFormatOptions = new TypeConverterOptions {Formats = new[] {"o"}};
-
+            var csvContentType = new ContentType("text/csv") { CharSet = "utf-8" };
+            CsvContentType   = csvContentType;
             CsvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
-            CsvConfiguration.TypeConverterOptionsCache.AddOptions<DateTime>(dateFormatOptions);
         }
 
         public string      WriterName  => Name;
@@ -41,35 +41,33 @@ namespace Ruzzie.SimpleReports.Writers
         public async Task Write(IAsyncQueryResult data, Stream streamToWriteTo)
         {
             //We want to Dispose and close the newly created StreamWriter, but leave the underlying stream open that is for the caller to handle
-             var streamWriter = new StreamWriter(streamToWriteTo, Encoding.UTF8, -1, leaveOpen: true);
-             await using (streamWriter.ConfigureAwait(false))
-             {
+            var streamWriter = new StreamWriter(streamToWriteTo, Encoding.UTF8, -1, leaveOpen: true);
+            await using (streamWriter.ConfigureAwait(false))
+            {
+                var columns = data.Columns;
 
-                 var columns = data.Columns;
+                var writer = new CsvWriter(streamWriter, CsvConfiguration, false);
+                writer.Context.TypeConverterOptionsCache.AddOptions<DateTime>(DateFormatOptions);
+                await using (writer.ConfigureAwait(false))
+                {
+                    var columnCount = columns.Count;
+                    for (var i = 0; i < columnCount; i++)
+                    {
+                        var column = columns[i];
 
-                 var writer = new CsvWriter(streamWriter, CsvConfiguration, false);
-                 await using (writer.ConfigureAwait(false))
-                 {
-                     var columnCount = columns.Count;
-                     for (var i = 0; i < columnCount; i++)
-                     {
-                         var column = columns[i];
+                        writer.WriteField($"{column.Name}@{column.Type}");
+                    }
 
-                         writer.WriteField($"{column.Name}@{column.Type}");
-                     }
+                    await writer.NextRecordAsync();
 
-                     await writer.NextRecordAsync();
-
-                     await writer.FlushAsync();
-                     await WriteRowsAsync(data, columnCount, writer);
-                     await writer.FlushAsync();
-                 }
-             }
+                    await writer.FlushAsync();
+                    await WriteRowsAsync(data, columnCount, writer);
+                    await writer.FlushAsync();
+                }
+            }
         }
 
-        private static async Task WriteRowsAsync(IAsyncQueryResult data,
-                                                 int               columnCount,
-                                                 CsvWriter         writer)
+        private static async Task WriteRowsAsync(IAsyncQueryResult data, int columnCount, CsvWriter writer)
         {
             await foreach (var row in data.Rows)
             {

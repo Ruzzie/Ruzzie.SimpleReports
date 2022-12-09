@@ -21,6 +21,11 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
     [TestFixture]
     public class WithUsePreparedStatementsAgainstSqlLiteTestBase : RunReportAgainstSqlLiteTestBase
     {
+        public WithUsePreparedStatementsAgainstSqlLiteTestBase() :
+            base(nameof(WithUsePreparedStatementsAgainstSqlLiteTestBase) + ".db")
+        {
+        }
+
         protected override SqlReportQueryRunner CreateQueryRunner(CreateConnectionForRunFunc createConnectionFunc)
         {
             return new SqlReportQueryRunner(createConnectionFunc
@@ -37,6 +42,11 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
     [TestFixture]
     public class WithoutUsePreparedStatementsAgainstSqlLiteTestBase : RunReportAgainstSqlLiteTestBase
     {
+        public WithoutUsePreparedStatementsAgainstSqlLiteTestBase() :
+            base(nameof(WithoutUsePreparedStatementsAgainstSqlLiteTestBase) + ".db")
+        {
+        }
+
         protected override SqlReportQueryRunner CreateQueryRunner(CreateConnectionForRunFunc createConnectionFunc)
         {
             return new SqlReportQueryRunner(createConnectionFunc
@@ -59,15 +69,16 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
 
         private static readonly CsvTypedReportWriter CsvTypedReportWriter = new CsvTypedReportWriter();
 
-        protected RunReportAgainstSqlLiteTestBase()
+        protected RunReportAgainstSqlLiteTestBase(string dbFilename)
         {
             // ReSharper disable once VirtualMemberCallInConstructor
-            _sqlReportQueryRunner = CreateQueryRunner(x => CreateAndOpenConnection());
+            _sqlReportQueryRunner = CreateQueryRunner(_ => CreateAndOpenConnection());
             // ReSharper disable once VirtualMemberCallInConstructor
-            _sqlListProvider = CreateSqlListProvider(x => CreateAndOpenConnection());
+            _sqlListProvider = CreateSqlListProvider(_ => CreateAndOpenConnection());
+            DbFilename       = dbFilename;
         }
 
-        protected const string DbFilename = "integrationtest.db";
+        protected readonly string DbFilename;
 
         protected abstract SqlReportQueryRunner CreateQueryRunner(CreateConnectionForRunFunc     createConnectionFunc);
         protected abstract SqlListProvider      CreateSqlListProvider(CreateConnectionForRunFunc createConnectionFunc);
@@ -107,7 +118,7 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
             _reportService.GetAllReportDefinitionInfos();
         }
 
-        private static SqliteConnection CreateAndOpenConnection()
+        private SqliteConnection CreateAndOpenConnection()
         {
             var c = new SqliteConnection($"Data Source={DbFilename}");
             c.Open();
@@ -163,7 +174,7 @@ namespace Ruzzie.SimpleReports.UnitTests.Db
 
             while (csvReader.Read())
             {
-                Console.WriteLine(csvReader.Context.RawRecord);
+                Console.WriteLine(csvReader.Parser.RawRecord);
                 numRows++;
             }
 

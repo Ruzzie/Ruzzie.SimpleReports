@@ -10,7 +10,12 @@ namespace Ruzzie.SimpleReports.UnitTests
                                    , string                                    query
                                    , List<IQueryRunParameter>                  queryParameters)
         {
-            return new AsyncQueryResult(new IColumn[] { new Column("Test", ColumnDataType.s) }, GenerateTestRows());
+            return new AsyncQueryResult(new IColumn[]
+                                        {
+                                            new Column("Test",   ColumnDataType.s)
+                                          , new Column("DTTest", ColumnDataType.td_s)
+                                        }
+                                      , GenerateTestRows());
         }
 
 #pragma warning disable 1998
@@ -21,6 +26,7 @@ namespace Ruzzie.SimpleReports.UnitTests
             {
                 var row = DataRow.Create(1);
                 row.AddField(Guid.NewGuid().ToString());
+                row.AddField(DateTime.UtcNow);
                 //row[0] = //TODO: Change api to reflect that you cannot SET the index when Add was not called first
                 yield return row;
             }
