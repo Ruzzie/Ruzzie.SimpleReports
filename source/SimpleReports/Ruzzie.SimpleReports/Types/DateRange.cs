@@ -1,14 +1,13 @@
-﻿namespace Ruzzie.SimpleReports.Types
+﻿namespace Ruzzie.SimpleReports.Types;
+
+public enum DateRange
 {
-    public enum DateRange
-    {
-        Today,
-        Yesterday,
-        ThisWeek,
-        LastWeek,
-        ThisMonth,
-        LastMonth,
-        ThisYear,
-        LastYear
-    }
+    Today,
+    Yesterday,
+    ThisWeek,
+    LastWeek,
+    ThisMonth,
+    LastMonth,
+    ThisYear,
+    LastYear
 }

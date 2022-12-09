@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Ruzzie.SimpleReports.Pipelines;
 
-namespace Ruzzie.SimpleReports.Reading
+namespace Ruzzie.SimpleReports.Reading;
+
+public interface IPostProcessPipelineDefinition
 {
-    public interface IPostProcessPipelineDefinition
-    {
-        IPostProcessPipeline  Pipeline    { get; }
-        IReadOnlyList<string> ParamsArray { get; }
-    }
+    IPostProcessPipeline  Pipeline    { get; }
+    IReadOnlyList<string> ParamsArray { get; }
 }

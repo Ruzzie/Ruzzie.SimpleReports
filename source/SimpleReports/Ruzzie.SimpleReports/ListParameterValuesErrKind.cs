@@ -1,11 +1,10 @@
-﻿namespace Ruzzie.SimpleReports
+﻿namespace Ruzzie.SimpleReports;
+
+public enum ListParameterValuesErrKind
 {
-    public enum ListParameterValuesErrKind
-    {
-        CannotBeNullOrEmpty,
-        ReportIdDoesNotExist,
-        ParameterIdDoesNotExist,
-        ParameterHasNoListProvider,
-        Unexpected
-    }
+    CannotBeNullOrEmpty,
+    ReportIdDoesNotExist,
+    ParameterIdDoesNotExist,
+    ParameterHasNoListProvider,
+    Unexpected
 }

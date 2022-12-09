@@ -1,10 +1,9 @@
-﻿namespace Ruzzie.SimpleReports
+﻿namespace Ruzzie.SimpleReports;
+
+public enum RunReportErrKind
 {
-    public enum RunReportErrKind
-    {
-        Unexpected,
-        ArgumentNull,
-        ReportIdDoesNotExist,
-        ParameterError
-    }
+    Unexpected,
+    ArgumentNull,
+    ReportIdDoesNotExist,
+    ParameterError
 }

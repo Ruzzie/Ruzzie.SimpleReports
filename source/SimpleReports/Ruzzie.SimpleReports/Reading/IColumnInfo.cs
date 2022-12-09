@@ -1,8 +1,7 @@
-﻿namespace Ruzzie.SimpleReports.Reading
+﻿namespace Ruzzie.SimpleReports.Reading;
+
+public interface IColumnInfo
 {
-    public interface IColumnInfo
-    {
-        string          ColumnName { get; }
-        string          Type       { get; }
-    }
+    string ColumnName { get; }
+    string Type       { get; }
 }

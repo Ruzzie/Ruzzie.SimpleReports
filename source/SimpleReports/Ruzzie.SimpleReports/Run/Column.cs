@@ -1,5 +1,3 @@
-﻿namespace Ruzzie.SimpleReports.Run
-{
+﻿namespace Ruzzie.SimpleReports.Run;
 
-    public record Column (string Name, ColumnDataType Type) : IColumn;
-}
+public record Column (string Name, ColumnDataType Type) : IColumn;

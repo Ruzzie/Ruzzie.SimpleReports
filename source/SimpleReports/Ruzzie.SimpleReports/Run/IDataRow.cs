@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Ruzzie.SimpleReports.Run
+namespace Ruzzie.SimpleReports.Run;
+
+public interface IDataRow
 {
-    public interface IDataRow
-    {
-        IReadOnlyList<object> GetValues();
-        object this[int index] { get; }
-        int             FieldCount { get; }
-        void            AddField(object value);
-    }
+    IReadOnlyList<object> GetValues();
+    object this[int index] { get; }
+    int  FieldCount { get; }
+    void AddField(object value);
 }

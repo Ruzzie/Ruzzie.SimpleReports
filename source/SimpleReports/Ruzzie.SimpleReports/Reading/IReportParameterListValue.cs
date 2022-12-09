@@ -1,11 +1,10 @@
 ﻿using Ruzzie.SimpleReports.Types;
 
-namespace Ruzzie.SimpleReports.Reading
+namespace Ruzzie.SimpleReports.Reading;
+
+public interface IReportParameterListValue
 {
-    public interface IReportParameterListValue
-    {
-        string             Name      { get; }
-        object?            Value     { get; }
-        ParameterFieldType ValueType { get; }
-    }
+    string             Name      { get; }
+    object?            Value     { get; }
+    ParameterFieldType ValueType { get; }
 }

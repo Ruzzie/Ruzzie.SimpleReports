@@ -1,7 +1,6 @@
-﻿namespace Ruzzie.SimpleReports.Reading
+﻿namespace Ruzzie.SimpleReports.Reading;
+
+public enum AddParameterErrorCode
 {
-    public enum AddParameterErrorCode
-    {
-        ParameterIdNotFoundForParameterValueType
-    }
+    ParameterIdNotFoundForParameterValueType
 }

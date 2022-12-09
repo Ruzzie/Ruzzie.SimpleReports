@@ -1,8 +1,7 @@
-﻿namespace Ruzzie.SimpleReports.Run
+﻿namespace Ruzzie.SimpleReports.Run;
+
+public interface IColumn
 {
-    public interface IColumn
-    {
-        string         Name { get; }
-        ColumnDataType Type { get; }
-    }
+    string         Name { get; }
+    ColumnDataType Type { get; }
 }

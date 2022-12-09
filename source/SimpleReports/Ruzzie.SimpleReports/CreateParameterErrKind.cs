@@ -1,10 +1,9 @@
-﻿namespace Ruzzie.SimpleReports
+﻿namespace Ruzzie.SimpleReports;
+
+public enum CreateParameterErrKind
 {
-    public enum CreateParameterErrKind
-    {
-        CannotBeNullOrEmpty,
-        ReportIdDoesNotExist,
-        ParameterIdDoesNotExist,
-        Unexpected
-    }
+    CannotBeNullOrEmpty,
+    ReportIdDoesNotExist,
+    ParameterIdDoesNotExist,
+    Unexpected
 }

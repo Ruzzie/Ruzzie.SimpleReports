@@ -6,21 +6,20 @@ using Ruzzie.Common.Types;
 using Ruzzie.SimpleReports.Reading;
 using Ruzzie.SimpleReports.Types;
 
-namespace Ruzzie.SimpleReports
+namespace Ruzzie.SimpleReports;
+
+public interface IReportService
 {
-    public interface IReportService
-    {
-        Result<Err<CreateParameterErrKind>, IReportParameterValue> CreateParameterValue<TValue>(
-            string reportId,
-            string parameterId,
-            TValue value);
+    Result<Err<CreateParameterErrKind>, IReportParameterValue> CreateParameterValue<TValue>(
+        string reportId,
+        string parameterId,
+        TValue value);
 
-        Result<Err<RunReportErrKind, Exception>, Task> RunReport(RunReportContext runContext, Stream streamToWriteTo);
-        IReadOnlyCollection<IReportDefinitionInfo>     GetAllReportDefinitionInfos();
+    Result<Err<RunReportErrKind, Exception>, Task> RunReport(RunReportContext runContext, Stream streamToWriteTo);
+    IReadOnlyCollection<IReportDefinitionInfo>     GetAllReportDefinitionInfos();
 
-        Result<Err<ListParameterValuesErrKind, Exception>, IListParameterValues> ListParameterValues(
-            string                                    reportId,
-            string                                    parameterId,
-            ReadOnlySpan<(string Name, string Value)> args);
-    }
+    Result<Err<ListParameterValuesErrKind, Exception>, IListParameterValues> ListParameterValues(
+        string                                    reportId,
+        string                                    parameterId,
+        ReadOnlySpan<(string Name, string Value)> args);
 }

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace Ruzzie.SimpleReports.Run
+namespace Ruzzie.SimpleReports.Run;
+
+public interface IAsyncQueryResult
 {
-    public interface IAsyncQueryResult
-    {
-        IReadOnlyList<IColumn>     Columns { get; }
-        IAsyncEnumerable<IDataRow> Rows    { get; }
-    }
+    IReadOnlyList<IColumn>     Columns { get; }
+    IAsyncEnumerable<IDataRow> Rows    { get; }
 }
