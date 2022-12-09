@@ -5,10 +5,10 @@ namespace TinyToml.Scanning
 {
     internal static class TomlUnescapeStrings
     {
-        public static Token BasicString(ref SourceScanState scanState)
+        public static Token BasicString(scoped ref SourceScanState scanState)
         {
             Span<char> output   = new char[scanState.SourceDataLength - scanState.CurrentPos + 1];
-            var writePos = 0;
+            var        writePos = 0;
 
             while (scanState.HasNext())
             {
@@ -40,10 +40,10 @@ namespace TinyToml.Scanning
             return Scanner.ErrorToken(scanState, "Unterminated basic string");
         }
 
-        public static Token MultiLineString(ref SourceScanState scanState)
+        public static Token MultiLineString(scoped ref SourceScanState scanState)
         {
             Span<char> output   = new char[scanState.SourceDataLength - scanState.CurrentPos + 4];
-            var writePos = 0;
+            var        writePos = 0;
 
             //Skip/Ignore starting line-break after opening quotes
             switch (scanState.PeekNext())
@@ -101,8 +101,8 @@ namespace TinyToml.Scanning
                             if (scanState.Line <= currentLine)
                             {
                                 // no lines advanced, so error
-                                return Scanner.ErrorToken(scanState,
-                                                          "Line-ending backslashes must be the last non-whitespace character on the line");
+                                return Scanner.ErrorToken(scanState
+                                                        , "Line-ending backslashes must be the last non-whitespace character on the line");
                             }
 
                             if (scanState.IsAtEnd())
@@ -128,10 +128,10 @@ namespace TinyToml.Scanning
             return Scanner.ErrorToken(scanState, "Unterminated multi-line string at EOF");
         }
 
-        private static bool IsPartOfClosingQuotes(ref SourceScanState scanState,
-                                                  Span<char>          output,
-                                                  int                 writePos,
-                                                  out Token           token)
+        private static bool IsPartOfClosingQuotes(scoped ref SourceScanState scanState
+                                                , Span<char>                 output
+                                                , int                        writePos
+                                                , out Token                  token)
         {
             //Closing quotes """
             var lookAhead = scanState.LookAhead(2);
@@ -166,8 +166,7 @@ namespace TinyToml.Scanning
                     return true;
                 }
 
-                token = Scanner.CreateStringToken(TokenType.MultiLineString, scanState,
-                                                  output[..writePos]);
+                token = Scanner.CreateStringToken(TokenType.MultiLineString, scanState, output[..writePos]);
                 return true;
             }
 
@@ -189,10 +188,10 @@ namespace TinyToml.Scanning
             return (current >= 9 && current <= 13) || current == ' ';
         }
 
-        private static int UnescapeCharacter(ref SourceScanState scanState,
-                                             char                current,
-                                             Span<char>          outputBuffer,
-                                             int                 writePos)
+        private static int UnescapeCharacter(ref SourceScanState scanState
+                                           , char                current
+                                           , Span<char>          outputBuffer
+                                           , int                 writePos)
         {
             if (TryParseCompactEscapeSequence(current, out var unescapedChar))
             {
@@ -289,8 +288,7 @@ namespace TinyToml.Scanning
             catch (Exception e)
             {
                 throw new
-                    ArgumentException($"Unicode character \"\\U{unicode.ToString()}\" is not valid. {e.Message}",
-                                      e);
+                    ArgumentException($"Unicode character \"\\U{unicode.ToString()}\" is not valid. {e.Message}", e);
             }
         }
 
@@ -301,7 +299,7 @@ namespace TinyToml.Scanning
                 var decoded = ushort.Parse(unicode, NumberStyles.HexNumber);
                 if (IsValidUnicodeScalarValue(decoded))
                 {
-                    return (char) decoded;
+                    return (char)decoded;
                 }
 
                 throw new ArgumentException("InValidUnicodeScalarValue.");

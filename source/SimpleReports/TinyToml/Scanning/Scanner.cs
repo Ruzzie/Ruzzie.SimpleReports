@@ -6,7 +6,7 @@ namespace TinyToml.Scanning
 {
     internal static class Scanner
     {
-        public static Token ScanNext(ref SourceScanState scanState)
+        public static Token ScanNext(scoped ref SourceScanState scanState)
         {
             var prevLine = scanState.Line;
 
@@ -50,21 +50,21 @@ namespace TinyToml.Scanning
 
                         return current switch
                         {
-                            '.' => CreateToken(TokenType.DecimalPoint,         scanState),
-                            '+' => CreateToken(TokenType.ExponentPositiveSign, scanState),
-                            '-' => CreateToken(TokenType.ExponentNegativeSign, scanState),
-                            _   => ScanNumberBaseDigits(ref scanState, current)
+                            '.' => CreateToken(TokenType.DecimalPoint,         scanState)
+                          , '+' => CreateToken(TokenType.ExponentPositiveSign, scanState)
+                          , '-' => CreateToken(TokenType.ExponentNegativeSign, scanState)
+                          , _   => ScanNumberBaseDigits(ref scanState, current)
                         };
 
                     case NumberScope.DateTime:
                         return current switch
                         {
-                            '.' => CreateToken(TokenType.DateTimeDot,   scanState),
-                            ':' => CreateToken(TokenType.DateTimeColon, scanState),
-                            '-' => CreateToken(TokenType.DateTimeDash,  scanState),
-                            'T' => CreateToken(TokenType.DateTimeT,     scanState),
-                            'Z' => CreateToken(TokenType.DateTimeZ,     scanState),
-                            _   => ScanNumberBaseDigits(ref scanState, current)
+                            '.' => CreateToken(TokenType.DateTimeDot,   scanState)
+                          , ':' => CreateToken(TokenType.DateTimeColon, scanState)
+                          , '-' => CreateToken(TokenType.DateTimeDash,  scanState)
+                          , 'T' => CreateToken(TokenType.DateTimeT,     scanState)
+                          , 'Z' => CreateToken(TokenType.DateTimeZ,     scanState)
+                          , _   => ScanNumberBaseDigits(ref scanState, current)
                         };
 
                     default:
@@ -154,7 +154,7 @@ namespace TinyToml.Scanning
                            && scanState.PeekNextUnsafe() != ']'
                            && scanState.PeekNextUnsafe() != '{'
                            && !char.IsWhiteSpace(scanState.PeekNextUnsafe())
-                    )
+                          )
                     {
                         scanState.Advance();
                     }
@@ -172,9 +172,9 @@ namespace TinyToml.Scanning
             }
         }
 
-        private static bool TryCheckAndSetNewNumberScope(ref SourceScanState scanState,
-                                                         char                current,
-                                                         out Token           digitsToken)
+        private static bool TryCheckAndSetNewNumberScope(scoped ref SourceScanState scanState
+                                                       , char                       current
+                                                       , out Token                  digitsToken)
         {
             //todo: refactor this method so it only does 1 thing
             // we probably can return the new numberScope and let the caller use that to set it in the sourceState
@@ -242,7 +242,7 @@ namespace TinyToml.Scanning
             return false;
         }
 
-        private static Token ScanNumberBaseDigits(ref SourceScanState scanState, char current)
+        private static Token ScanNumberBaseDigits(scoped ref SourceScanState scanState, char current)
         {
             //todo: let's see if we can extract this if and Underscore token created out of this method?
             if (current == '_')
@@ -267,10 +267,10 @@ namespace TinyToml.Scanning
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool MatchesString(in ReadOnlySpan<char> valueToMatch,
-                                          TokenType             tokenType,
-                                          ref SourceScanState   scanState,
-                                          out Token             tokenOnMatch)
+        private static bool MatchesString(ReadOnlySpan<char>         valueToMatch
+                                        , TokenType                  tokenType
+                                        , scoped ref SourceScanState scanState
+                                        , out        Token           tokenOnMatch)
         {
             var lenghtToCheck = valueToMatch.Length;
 
@@ -311,7 +311,7 @@ namespace TinyToml.Scanning
             return false;
         }
 
-        private static Token String(ref SourceScanState scanState)
+        private static Token String(scoped ref SourceScanState scanState)
         {
             if (scanState.PeekNext() == '"')
             {
@@ -335,7 +335,7 @@ namespace TinyToml.Scanning
             return CreateToken(TokenType.EmptyString, scanState);
         }
 
-        private static NumberScope TryParseHexOctIntPrefix(ref SourceScanState scanState, out Token prefixToken)
+        private static NumberScope TryParseHexOctIntPrefix(scoped ref SourceScanState scanState, out Token prefixToken)
         {
             var next = scanState.PeekNext();
             switch (next)
@@ -358,7 +358,7 @@ namespace TinyToml.Scanning
             }
         }
 
-        private static Token LiteralString(ref SourceScanState scanState)
+        private static Token LiteralString(scoped ref SourceScanState scanState)
         {
             if (scanState.PeekNext() == '\'')
             {
@@ -388,7 +388,7 @@ namespace TinyToml.Scanning
             return CreateTokenTrimBeforeAndAfter(TokenType.LiteralString, scanState, 1);
         }
 
-        private static Token MultilineLiteralString(ref SourceScanState scanState)
+        private static Token MultilineLiteralString(scoped ref SourceScanState scanState)
         {
             //todo: see if we can restructure this method, so it is easier to follow the flow
             //  and see it we can reduce the number of lookaheads
@@ -437,7 +437,7 @@ namespace TinyToml.Scanning
                 scanState.Advance(3);
                 if (scanState.PeekNext() != '\'')
                 {
-                    return CreateTokenTrimBeforeAndAfter(TokenType.MultiLineLiteralString, scanState,3);
+                    return CreateTokenTrimBeforeAndAfter(TokenType.MultiLineLiteralString, scanState, 3);
                 }
 
                 scanState.Advance();
@@ -466,23 +466,21 @@ namespace TinyToml.Scanning
             return lookAhead.Length == 3 && lookAhead[0] == '\'' && lookAhead[1] == '\'' && lookAhead[2] == '\'';
         }
 
-        public static Token ErrorToken(in SourceScanState state, in ReadOnlySpan<char> errorMessage)
+        public static Token ErrorToken( /*in*/ SourceScanState state, ReadOnlySpan<char> errorMessage)
         {
-            return new Token(TokenType.Error,
-                             errorMessage,
-                             state.Line,
-                             state.Column);
+            return new Token(TokenType.Error, errorMessage, state.Line, state.Column);
         }
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         enum Until
         {
-            EOF   = 0,
-            LF    = 1,
-            CR_LF = 2,
+            EOF   = 0
+          , LF    = 1
+          , CR_LF = 2
+           ,
         }
 
-        private static Token SingleLineComment(ref SourceScanState scanState)
+        private static Token SingleLineComment(scoped ref SourceScanState scanState)
         {
             //Scan until newline
             AdvanceUntilBeforeEndOfLine(ref scanState);
@@ -521,33 +519,37 @@ namespace TinyToml.Scanning
             return scanState.PeekNext() == '\n' ? Until.LF : Until.EOF;
         }
 
-        public static Token CreateToken(TokenType tokenType, in SourceScanState state)
+        public static Token CreateToken(TokenType tokenType, /*in*/ SourceScanState state)
         {
-            return new Token(tokenType,
-                             state.SourceDataSpan[state.StartIndex .. state.CurrentPos],
-                             state.Line,
-                             state.Column
+            return new Token(tokenType
+                           , state.SourceDataSpan[state.StartIndex .. state.CurrentPos]
+                           , state.Line
+                           , state.Column
                             );
         }
 
-        public static Token CreateTokenTrimBeforeAndAfter(TokenType tokenType, in SourceScanState state, int trimCount)
+        public static Token CreateTokenTrimBeforeAndAfter(TokenType              tokenType
+                                                        , /*in*/ SourceScanState state
+                                                        , int                    trimCount)
         {
-            return new Token(tokenType,
-                             state.SourceDataSpan[(state.StartIndex + trimCount) ..(state.CurrentPos - trimCount)],
-                             state.Line,
-                             state.Column
+            return new Token(tokenType
+                           , state.SourceDataSpan[(state.StartIndex + trimCount) ..(state.CurrentPos - trimCount)]
+                           , state.Line
+                           , state.Column
                             );
         }
 
-        public static Token CreateStringToken(TokenType          tokenType,
-                                              in SourceScanState state,
-                                              ReadOnlySpan<char> unescapedString)
+        public static Token CreateStringToken(TokenType tokenType
+                                             ,
+                                              /*in*/ SourceScanState state
+                                            , ReadOnlySpan<char>     unescapedString)
         {
-            return new Token(tokenType,
-                             unescapedString,
+            return new Token(tokenType
+                           , unescapedString
+                            ,
                              // state.SourceDataSpan[state.StartIndex .. state.CurrentPos],
-                             state.Line,
-                             state.Column
+                             state.Line
+                           , state.Column
                             );
         }
 
@@ -580,18 +582,19 @@ namespace TinyToml.Scanning
 
     internal enum NumberScope
     {
-        None,
-        Bin,
-        Oct,
-        Dec,
-        Hex,
-
-        DateTime, // must be last element
+        None
+      , Bin
+      , Oct
+      , Dec
+      , Hex
+      , DateTime
+      , // must be last element
     }
 
     internal enum ScanScope
     {
-        Key,
-        Value,
+        Key
+      , Value
+       ,
     }
 }

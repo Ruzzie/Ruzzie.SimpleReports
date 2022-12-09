@@ -3,13 +3,13 @@
     <PropertyGroup>
         <Title>Ruzzie's SimpleReports</Title>
         <Description>A very simple and basic report engine based on reports defined in a config file.</Description>
-        <TargetFrameworks>netstandard2.1;netframework5.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
         <Authors>Dorus Verhoeckx</Authors>
         <Company>D Crafting</Company>
         <Copyright>Copyright © Dorus Verhoeckx 2020-2021</Copyright>
         <Version>0.0.1</Version>
         <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
+        <LangVersion>default</LangVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <IncludeSymbols>true</IncludeSymbols>

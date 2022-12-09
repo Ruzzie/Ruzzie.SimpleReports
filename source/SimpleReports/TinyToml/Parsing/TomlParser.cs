@@ -67,14 +67,14 @@ namespace TinyToml.Parsing
             return AllRules[(int) tokenType];
         }
 
-        private static TomlInteger ParseTomlInteger(string key, in ReadOnlySpan<char> text, int sign, int radix)
+        private static TomlInteger ParseTomlInteger(string key, ReadOnlySpan<char> text, int sign, int radix)
         {
             //Todo: TryParse, error handling
             var number = Convert.ToInt64(text.ToString(), radix) * sign;
             return new TomlInteger(key, number);
         }
 
-        private static TomlFloat ParseTomlFloat(string key, in ReadOnlySpan<char> text, int sign)
+        private static TomlFloat ParseTomlFloat(string key, ReadOnlySpan<char> text, int sign)
         {
             var number = double.Parse(text, NumberStyles.Float, CultureInfo.InvariantCulture) * sign;
             return new TomlFloat(key, number);

@@ -14,8 +14,9 @@ namespace Ruzzie.SimpleReports.Db
 
         private readonly ReadOnlyDictionary<Type, ColumnDataType> _columnTypeMapping;
 
-        public SqlReportQueryRunner(CreateConnectionForRunFunc createConnectionForRunFunc,
-                                    Span<KeyValuePair<Type, ColumnDataType>> extraColumnTypeMapping,  bool usePreparedStatement = true)
+        public SqlReportQueryRunner(CreateConnectionForRunFunc               createConnectionForRunFunc
+                                  , Span<KeyValuePair<Type, ColumnDataType>> extraColumnTypeMapping
+                                  , bool                                     usePreparedStatement = true)
         {
             _createConnectionForRunFunc = createConnectionForRunFunc;
             _usePreparedStatement       = usePreparedStatement;
@@ -30,7 +31,8 @@ namespace Ruzzie.SimpleReports.Db
 
                 foreach (var (key, value) in extraColumnTypeMapping)
                 {
-                    if(key != null)
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract : TrustNo1
+                    if (key != null)
                         columnTypeMapping.Add(key, value);
                 }
 
@@ -41,13 +43,13 @@ namespace Ruzzie.SimpleReports.Db
         ///Runs (executes) a given query. This will create a connection and command (with prepare)
         /// and create parameters for the query and returns an async result such that it can be iterated
         /// with an await foreach.
-        /// <remarks>A <see cref="DbConnection"/> is created by calling the <see cref="CreateConnectionForRunFunc"/> method passed in the <see cref="SqlReportQueryRunner(CreateConnectionForRunFunc,Span{KeyValuePair{Type, ColumnDataType}})"/> with <paramref name="runParams"/>
+        /// <remarks>A <see cref="DbConnection"/> is created by calling the <see cref="CreateConnectionForRunFunc"/>
+        /// method passed in the <see ref="SqlReportQueryRunner.(CreateConnectionForRunFunc,Span{KeyValuePair{Type, ColumnDataType}})"/> with <paramref name="runParams"/>
         /// </remarks>
         public IAsyncQueryResult Run(ReadOnlySpan<(string Name, string Value)> runParams
                                    , string                                    query
                                    , List<IQueryRunParameter>                  queryParameters)
         {
-
             //the connection is disposed later when the AsyncEnumerable is done
             //   note: this will throw exceptions when a valid connection cannot be created
             var dbConnection = _createConnectionForRunFunc(runParams);
@@ -57,7 +59,7 @@ namespace Ruzzie.SimpleReports.Db
             dbCommand.CommandText = query;
             dbCommand.Parameters.AddRange(CreateSqlParameters(queryParameters, dbCommand));
 
-            if(_usePreparedStatement)
+            if (_usePreparedStatement)
                 dbCommand.Prepare();
 
             // reader is wrapped in using in the ReadRows method for async reading
@@ -72,7 +74,8 @@ namespace Ruzzie.SimpleReports.Db
             {
                 var dbColumn = columnSchema[i];
                 // ReSharper disable once ConstantNullCoalescingCondition
-                var name     = dbColumn.ColumnName ?? "";
+                // ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+                var name = dbColumn.ColumnName ?? "";
 
                 var type       = dbColumn.DataType; // clr type? except datetime in some cases??
                 var columnType = type != null ? MapColumnType(type) : ColumnDataType.s;
@@ -124,11 +127,10 @@ namespace Ruzzie.SimpleReports.Db
         }
 
         /// Returns an async enumerable to read the rows from a DbDataReader, and disposes the reader and connection when done.
-        private static async IAsyncEnumerable<IDataRow> ReadRows(DbDataReader     reader,
-                                                                 IAsyncDisposable commandToDisposeWhenDone,
-                                                                 IAsyncDisposable connectionToDisposeWhenDone)
+        private static async IAsyncEnumerable<IDataRow> ReadRows(DbDataReader     reader
+                                                               , IAsyncDisposable commandToDisposeWhenDone
+                                                               , IAsyncDisposable connectionToDisposeWhenDone)
         {
-
             await using (connectionToDisposeWhenDone.ConfigureAwait(false))
             {
                 await using (commandToDisposeWhenDone.ConfigureAwait(false))

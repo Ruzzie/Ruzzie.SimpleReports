@@ -9,7 +9,7 @@
         <Copyright>Copyright © Dorus Verhoeckx 2020, 2021</Copyright>
         <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
         <Version>0.0.1</Version>
-        <TargetFrameworks>netstandard2.1;netframework5.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
