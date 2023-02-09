@@ -73,20 +73,22 @@ public class ReportService : IReportService
             {
                 var reportParameterValue = runContext.ReportParamValues[i];
 
-                var createQueryParamResult = reportParameterValue.CreateQueryParameters(ctx);
-                var (isError, isOk) =
-                    createQueryParamResult.GetValue(out IQueryRunParameter[]? queryRunParameters, out var innerErr);
 
-                if (isError)
+                if (reportParameterValue.CreateQueryParameters(ctx)
+                                        .IsOk(out var queryRunParameters
+                                            , out var innerErr
+                                            , Array.Empty<IQueryRunParameter>()
+                                            , default))
                 {
-                    return new Err<RunReportErrKind, Exception>(innerErr.ErrorKind.ToString() + " : " +
+                    allQueryParams.AddRange(queryRunParameters);
+                }
+                else
+                {
+                    return new Err<RunReportErrKind, Exception>(innerErr.ErrorKind + " : " +
                                                                 innerErr.Message
                                                               , RunReportErrKind.ParameterError
                                                               , innerErr);
                 }
-
-                if (isOk && queryRunParameters != null)
-                    allQueryParams.AddRange(queryRunParameters);
             }
 
             IAsyncQueryResult qr =

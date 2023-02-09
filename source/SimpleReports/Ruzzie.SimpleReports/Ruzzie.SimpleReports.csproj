@@ -31,7 +31,7 @@
 
     <ItemGroup>
       <PackageReference Include="CsvHelper" Version="30.0.1" />
-      <PackageReference Include="Ruzzie.Common.Types" Version="0.0.18.49" />
+      <PackageReference Include="Ruzzie.Common.Types" Version="0.0.19.50" />
     </ItemGroup>
 
     <!-- INCLUDE SOURCE OF TINY TOML PARSER, SUCH THAT IT IS PACKED IN THE PUBLISHED DLL -->
