@@ -1,6 +1,5 @@
 ﻿using Ruzzie.Common.Types;
 using Ruzzie.SimpleReports.Reading;
-using Ruzzie.SimpleReports.Types;
 
 namespace Ruzzie.SimpleReports;
 

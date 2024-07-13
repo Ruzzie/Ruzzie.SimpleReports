@@ -1,7 +1,6 @@
 ﻿using System;
 using Ruzzie.SimpleReports.Reading;
 using Ruzzie.SimpleReports.Run;
-using Ruzzie.SimpleReports.Types;
 using Ruzzie.SimpleReports.Writers;
 
 namespace Ruzzie.SimpleReports;

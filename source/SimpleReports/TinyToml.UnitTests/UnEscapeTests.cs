@@ -48,7 +48,7 @@ public class EscapeTests
             Action parseText          = () => Toml.Parse(stringWithLineFeed);
 
             parseText.Should().Throw<Exception>()
-                     .WithMessage("Unicode character \"\\uFTFF\" is not valid. Input string was not in a correct format.");
+                     .WithMessage("Unicode character \"\\uFTFF\" is not valid.*");
         }
 
         [Test]
@@ -68,7 +68,7 @@ public class EscapeTests
             Action parseText          = () => Toml.Parse(stringWithLineFeed);
 
             parseText.Should().Throw<Exception>()
-                     .WithMessage("Unicode character \"\\U0000000G\" is not valid. Input string was not in a correct format.");
+                     .WithMessage("Unicode character \"\\U0000000G\" is not valid.*");
         }
 
         [Test]

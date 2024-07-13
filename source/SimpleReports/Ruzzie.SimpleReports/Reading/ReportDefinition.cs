@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Ruzzie.SimpleReports.Reading;
-
+//todo: to immutable type
 internal class ReportDefinition : IReportDefinition
 {
     private Dictionary<string, IReportParameterDefinition> _parameters =

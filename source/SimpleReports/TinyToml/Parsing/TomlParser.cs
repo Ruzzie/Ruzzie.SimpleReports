@@ -300,7 +300,7 @@ namespace TinyToml.Parsing
         // ReSharper disable once InconsistentNaming
         private const int MAX_DIGITS = 64;
         // ReSharper disable once InconsistentNaming
-        private static readonly string TOO_MANY_DIGIT_ERR_MSG = FormattableString.Invariant($"Could not parse number, too many digits the maximum number of digits is {MAX_DIGITS}.");
+        private static readonly string TOO_MANY_DIGIT_ERR_MSG = FormattableString.Invariant($"Could not parse number, too many digits the maximum number of digits is {MAX_DIGITS.ToString()}.");
 
         private static void CollectAll(TokenType digitsTokenType, ref ParseState parseState, int radix, int sign)
         {
@@ -329,7 +329,7 @@ namespace TinyToml.Parsing
 
             while (ForwardOnMatch(TokenType.Underscore, ref parseState))
             {
-                EatOrError(digitsTokenType, ref parseState, $"Expect {digitsTokenType} after '_'.");
+                EatOrError(digitsTokenType, ref parseState, $"Expect {digitsTokenType.ToString("G")} after '_'.");
 
                 AssertMaxDigits(digitCount, ref parseState);
 
@@ -478,7 +478,7 @@ namespace TinyToml.Parsing
             //Open brace means it is an inline table
             var previousTableScope = parseState.CurrentTable;
             var tableName = parseState.CurrentScope == ParseState.Scope.Array
-                ? $"{parseState.CurrentArray.Key}-{parseState.CurrentArray.Count}"
+                ? $"{parseState.CurrentArray.Key}-{parseState.CurrentArray.Count.ToString()}"
                 : parseState.CurrentKey;
 
             var tomlTable = new TomlTable(tableName);
@@ -514,7 +514,7 @@ namespace TinyToml.Parsing
         private static void ArrayValues(bool canAssign, ref ParseState parseState)
         {
             var arrayName = parseState.CurrentScope == ParseState.Scope.Array
-                ? $"{parseState.CurrentArray.Key}-{parseState.CurrentArray.Count}"
+                ? $"{parseState.CurrentArray.Key}-{parseState.CurrentArray.Count.ToString()}"
                 : parseState.CurrentKey;
 
             var tomlArray = new TomlArray(arrayName);
@@ -571,7 +571,7 @@ namespace TinyToml.Parsing
                     AddValueToCurrentScope(ref parseState, new TomlBoolean(parseState.CurrentKey, false));
                     break;
                 default:
-                    ErrorAtPrevious(ref parseState, $"Expected literal type but was {parseState.Previous.TokenType}");
+                    ErrorAtPrevious(ref parseState, $"Expected literal type but was {parseState.Previous.TokenType.ToString("G")}");
                     return;
             }
         }
@@ -602,7 +602,7 @@ namespace TinyToml.Parsing
                     AddValueToCurrentScope(ref parseState, multiLineLiteralStringValue);
                     break;
                 default:
-                    ErrorAtPrevious(ref parseState, $"Expected string type but was {parseState.Previous.TokenType}");
+                    ErrorAtPrevious(ref parseState, $"Expected string type but was {parseState.Previous.TokenType.ToString("G")}");
                     return;
             }
         }
@@ -653,7 +653,7 @@ namespace TinyToml.Parsing
             if (!IsValidKeyNameType(parseState.Current))
             {
                 ErrorAtCurrent(ref parseState,
-                               $"Key or table name expected. But was '{parseState.Current.TokenType}'.");
+                               $"Key or table name expected. But was '{parseState.Current.TokenType.ToString("G")}'.");
                 return;
             }
 
@@ -679,12 +679,12 @@ namespace TinyToml.Parsing
                             break;
                         case TomlArray array:
                             ErrorAtCurrent(ref parseState,
-                                           $"The current element of the Array {array.Key} is not a table, '{parseState.CurrentKey}' was already assigned a value of type {array.CurrentElement.TomlType}. It cannot be used as a Table.");
+                                           $"The current element of the Array {array.Key} is not a table, '{parseState.CurrentKey}' was already assigned a value of type {array.CurrentElement.TomlType.ToString("G")}. It cannot be used as a Table.");
                             return;
                         default:
 
                             ErrorAtCurrent(ref parseState,
-                                           $"Key '{parseState.CurrentKey}' was already assigned a value of type {tomlValue.TomlType}. It cannot be redefined as a Table.");
+                                           $"Key '{parseState.CurrentKey}' was already assigned a value of type {tomlValue.TomlType.ToString("G")}. It cannot be redefined as a Table.");
                             return;
                     }
                 }
@@ -731,7 +731,7 @@ namespace TinyToml.Parsing
                     if (!tomlValue.TryReadTomlTable(out tomlTable))
                     {
                         ErrorAtPrevious(ref parseState,
-                                        $"Cannot redefine '{tableName}' as a Table. It was already declared as '{tomlValue.TomlType}'.");
+                                        $"Cannot redefine '{tableName}' as a Table. It was already declared as '{tomlValue.TomlType.ToString("G")}'.");
                         return;
                     }
                 }
@@ -763,7 +763,7 @@ namespace TinyToml.Parsing
                     if (!tomlValue.TryReadTomlArray(out array))
                     {
                         ErrorAtPrevious(ref parseState,
-                                        $"Cannot redefine '{arrayName}' as an Array. It was already declared as '{tomlValue.TomlType}'.");
+                                        $"Cannot redefine '{arrayName}' as an Array. It was already declared as '{tomlValue.TomlType.ToString("G")}'.");
                         return;
                     }
                 }
@@ -786,12 +786,12 @@ namespace TinyToml.Parsing
                 if (parseState.ScanState.ScanScope == ScanScope.Value)
                 {
                     ErrorAtCurrent(ref parseState,
-                                   $"Unknown value type in {parseState.Current.TokenType} token");
+                                   $"Unknown value type in {parseState.Current.TokenType.ToString("G")} token");
                 }
                 else
                 {
                     ErrorAtCurrent(ref parseState,
-                                   $"Panic in {nameof(Declaration)}. Unexpected token {parseState.Current.TokenType}");
+                                   $"Panic in {nameof(Declaration)}. Unexpected token {parseState.Current.TokenType.ToString("G")}");
                 }
             }
         }
@@ -825,6 +825,7 @@ namespace TinyToml.Parsing
             while (precedence <= GetParseRule(parseState.Current.TokenType).Precedence)
             {
                 NextToken(ref parseState);
+
                 //INFIX
                 var infixRule = GetParseRule(parseState.Previous.TokenType).Infix;
 

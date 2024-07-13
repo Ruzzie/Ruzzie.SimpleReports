@@ -6,5 +6,5 @@ namespace Ruzzie.SimpleReports.Pipelines;
 
 public interface IPostProcessPipeline
 {
-    IAsyncQueryResult Process(IReadOnlyList<string> pipelineArgs, in ReadOnlySpan<(string Name, string Value)> runParams, IAsyncQueryResult queryResult);
+    IAsyncQueryResult Process(IReadOnlyList<string> pipelineArgs, ReadOnlySpan<(string Name, string Value)> runParams, IAsyncQueryResult queryResult);
 }

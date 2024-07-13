@@ -466,7 +466,7 @@ namespace TinyToml.Scanning
             return lookAhead.Length == 3 && lookAhead[0] == '\'' && lookAhead[1] == '\'' && lookAhead[2] == '\'';
         }
 
-        public static Token ErrorToken( /*in*/ SourceScanState state, ReadOnlySpan<char> errorMessage)
+        public static Token ErrorToken(SourceScanState state, ReadOnlySpan<char> errorMessage)
         {
             return new Token(TokenType.Error, errorMessage, state.Line, state.Column);
         }

@@ -9,7 +9,7 @@ using CsvHelper;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using NUnit.Framework;
-using Ruzzie.Common.Types;
+using Ruzzie.Common.Types.Diagnostics;
 using Ruzzie.SimpleReports.Db;
 using Ruzzie.SimpleReports.Pipelines;
 using Ruzzie.SimpleReports.Reading;

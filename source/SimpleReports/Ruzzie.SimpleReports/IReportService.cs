@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Ruzzie.Common.Types;
 using Ruzzie.SimpleReports.Reading;
-using Ruzzie.SimpleReports.Types;
 
 namespace Ruzzie.SimpleReports;
 

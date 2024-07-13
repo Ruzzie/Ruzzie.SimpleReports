@@ -19,11 +19,11 @@ public static class StringIdExtensions
         var inputLength = str.Length;
         var appendIndex = 0;
 
-        //max size in chars
-        const int maxStackSize = 128;
+        //max size in chars 
+        const int MAX_STACK_SIZE = 128;
 
         //Use a stackalloc when the input string is smaller than the maxStackSize; else use an array allocation
-        var buffer = inputLength < maxStackSize ? stackalloc char[maxStackSize] : new char[inputLength];
+        var buffer = inputLength < MAX_STACK_SIZE ? stackalloc char[MAX_STACK_SIZE] : new char[inputLength];
 
         for (var i = 0; i < inputLength; ++i)
         {
