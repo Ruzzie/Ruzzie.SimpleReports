@@ -472,12 +472,11 @@ namespace TinyToml.Scanning
         }
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        enum Until
+        private enum Until
         {
             EOF   = 0
           , LF    = 1
           , CR_LF = 2
-           ,
         }
 
         private static Token SingleLineComment(scoped ref SourceScanState scanState)
@@ -519,7 +518,7 @@ namespace TinyToml.Scanning
             return scanState.PeekNext() == '\n' ? Until.LF : Until.EOF;
         }
 
-        public static Token CreateToken(TokenType tokenType, /*in*/ SourceScanState state)
+        public static Token CreateToken(TokenType tokenType, SourceScanState state)
         {
             return new Token(tokenType
                            , state.SourceDataSpan[state.StartIndex .. state.CurrentPos]
@@ -528,29 +527,24 @@ namespace TinyToml.Scanning
                             );
         }
 
-        public static Token CreateTokenTrimBeforeAndAfter(TokenType              tokenType
-                                                        , /*in*/ SourceScanState state
-                                                        , int                    trimCount)
+        public static Token CreateTokenTrimBeforeAndAfter(TokenType       tokenType
+                                                        , SourceScanState state
+                                                        , int             trimCount)
         {
             return new Token(tokenType
                            , state.SourceDataSpan[(state.StartIndex + trimCount) ..(state.CurrentPos - trimCount)]
                            , state.Line
-                           , state.Column
-                            );
+                           , state.Column);
         }
 
-        public static Token CreateStringToken(TokenType tokenType
-                                             ,
-                                              /*in*/ SourceScanState state
-                                            , ReadOnlySpan<char>     unescapedString)
+        public static Token CreateStringToken(TokenType          tokenType
+                                            , SourceScanState    state
+                                            , ReadOnlySpan<char> unescapedString)
         {
             return new Token(tokenType
                            , unescapedString
-                            ,
-                             // state.SourceDataSpan[state.StartIndex .. state.CurrentPos],
-                             state.Line
-                           , state.Column
-                            );
+                           , state.Line
+                           , state.Column);
         }
 
         internal static void AdvanceWhiteSpaces(ref SourceScanState scanState)
@@ -595,6 +589,5 @@ namespace TinyToml.Scanning
     {
         Key
       , Value
-       ,
     }
 }

@@ -251,7 +251,7 @@ namespace TinyToml.Scanning
             var nextEightChars = scanState.LookAhead(8);
             if (nextEightChars.IsEmpty)
             {
-                throw new Exception($"Wrong usage of \\U");
+                throw new Exception("Wrong usage of \\U");
             }
 
             scanState.Advance(8);
@@ -270,7 +270,7 @@ namespace TinyToml.Scanning
             var nextFourChars = scanState.LookAhead(4);
             if (nextFourChars.IsEmpty)
             {
-                throw new Exception($"Wrong usage of \\u");
+                throw new Exception("Wrong usage of \\u");
             }
 
             scanState.Advance(4);

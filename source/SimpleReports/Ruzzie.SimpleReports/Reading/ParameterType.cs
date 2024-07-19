@@ -13,7 +13,7 @@ public enum ParameterType
 
    ,
 
-    /// <summary>A parameter that represents a date range with a from and to date.</summary>
+    /// <summary>A parameter that represents a date range with a `from` and `to` date.</summary>
     DATE_RANGE
 
    ,
@@ -22,6 +22,6 @@ public enum ParameterType
     TIME_INTERVAL
 
 
-  , /// <summary>A parameter that represents a time zone, possible values van be obtained. ex. "Europe/Amsterdam", "UTC" </summary>
+  , /// <summary>A parameter that represents a time zone, possible values can be obtained. ex. "Europe/Amsterdam", "UTC" </summary>
     TIMEZONE
 }
