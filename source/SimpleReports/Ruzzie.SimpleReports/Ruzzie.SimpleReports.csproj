@@ -3,10 +3,10 @@
     <PropertyGroup>
         <Title>Ruzzie's SimpleReports</Title>
         <Description>A very simple and basic report engine based on reports defined in a config file.</Description>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
         <Authors>Dorus Verhoeckx</Authors>
         <Company>D Crafting</Company>
-        <Copyright>Copyright © Dorus Verhoeckx 2020-2024</Copyright>
+        <Copyright>Copyright © D Crafting 2020-2026</Copyright>
         <Version>0.0.1</Version>
         <Nullable>enable</Nullable>
         <LangVersion>default</LangVersion>
