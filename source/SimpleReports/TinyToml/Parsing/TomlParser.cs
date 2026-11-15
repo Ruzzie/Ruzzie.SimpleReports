@@ -296,7 +296,7 @@ namespace TinyToml.Parsing
 
 
         //The maximum number of digits is 64 in binary, everything else is smaller
-        //note: possible Improvement, dependant on number type we could vary the max digits eg smaller
+        //note: possible Improvement, dependent on number type we could vary the max digits e.g. smaller
         // ReSharper disable once InconsistentNaming
         private const int MAX_DIGITS = 64;
         // ReSharper disable once InconsistentNaming
@@ -524,18 +524,22 @@ namespace TinyToml.Parsing
             var previousArray = parseState.CurrentArray;
             parseState.BeginArrayScope(tomlArray);
 
-            bool atEndOfArray;
-            do
+
+            // check if we are an empty array
+            bool atEndOfArray = ForwardOnMatch(TokenType.Comment, ref parseState) ||
+                                parseState.Current.TokenType == TokenType.RightBracket;
+
+            while (!atEndOfArray)
             {
                 //Parse the Current Element Value
                 Expr(ref parseState);
 
-                // check if it is the TrailingComma
-                //  and ignore comments
                 if (ForwardOnMatch(TokenType.Comma, ref parseState))
                 {
-                    if (ForwardOnMatch(TokenType.Comment, ref parseState) ||
-                        parseState.Current.TokenType == TokenType.RightBracket)
+                    //skip comments
+                    ForwardOnMatch(TokenType.Comment, ref parseState);
+
+                    if (parseState.Current.TokenType == TokenType.RightBracket)
                     {
                         // [.... 2, #hello
                         // [.... 2, ]
@@ -553,7 +557,9 @@ namespace TinyToml.Parsing
                 {
                     atEndOfArray = true;
                 }
-            } while (!atEndOfArray); //Next Element
+
+                //Next Element
+            }
 
             EatOrError(TokenType.RightBracket, ref parseState, "Expect ']' at end of Array.");
 

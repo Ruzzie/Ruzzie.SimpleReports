@@ -73,7 +73,7 @@ public class ParserTests
         act.Should().Throw<ArgumentException>();
         try
         {
-            var doc = Toml.Parse(docStr);
+            _ = Toml.Parse(docStr);
             Assert.Fail("Should throw exception: Nesting is to deep, this is currently not supported.");
 
             //Assert
@@ -384,6 +384,35 @@ public class ParserTests
 
         values[1]["key"].TryReadTomlString(out var inner).Should().BeTrue();
         inner.Should().Be("otherValue");
+    }
+
+    [Test]
+    public void EmptyInlineArray()
+    {
+        //Arrange
+        var text = @"reads = []";
+
+        //Act
+        var doc = Toml.Parse(text);
+
+        //Assert
+        doc["reads"].TryReadTomlArray(out _).Should().BeTrue();
+    }
+
+    [Test]
+    public void InlineArrayWithComments()
+    {
+        //Arrange
+        var text = @"reads = [
+                              ""a"", # first
+                              ""b"" , # trailing comma and comments
+                             ]";
+        //Act
+        var doc = Toml.Parse(text);
+
+        //Assert
+        doc["reads"].TryReadTomlArray(out var values).Should().BeTrue();
+        values.Should().HaveCount(2);
     }
 
     [Test]
